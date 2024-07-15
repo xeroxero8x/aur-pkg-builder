@@ -1,10 +1,11 @@
-name: Build and Release Package
+name: Build and Release AUR Package
 
 on:
-  push:
-    tags:
-      - 'v*.*.*'
   workflow_dispatch:
+    inputs:
+      aur_repo_url:
+        description: 'URL of the AUR package repository'
+        required: true
 
 jobs:
   build:
@@ -21,16 +22,20 @@ jobs:
           pacman -Syu --noconfirm
           pacman -S --noconfirm base-devel git
 
-      - name: Build the package
+      - name: Clone AUR package repository
         run: |
-          cd /home/your-package-directory
-          makepkg -f --noconfirm
+          git clone ${{ github.event.inputs.aur_repo_url }} /home/aur-package
+          
+      - name: Build the AUR package
+        run: |
+          cd /home/aur-package
+          makepkg -si --noconfirm
 
       - name: Upload release assets
         uses: actions/upload-artifact@v2
         with:
-          name: your-package
-          path: /home/your-package-directory/*.pkg.tar.zst
+          name: aur-package
+          path: /home/aur-package/*.pkg.tar.zst
 
   release:
     needs: build
@@ -43,7 +48,7 @@ jobs:
       - name: Download built package
         uses: actions/download-artifact@v2
         with:
-          name: your-package
+          name: aur-package
           path: ./release
 
       - name: Create GitHub Release
@@ -64,5 +69,5 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./release/*.pkg.tar.zst
-          asset_name: your-package.pkg.tar.zst
+          asset_name: aur-package.pkg.tar.zst
           asset_content_type: application/x-tar
