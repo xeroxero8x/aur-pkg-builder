@@ -6,6 +6,9 @@ on:
       aur_repo_url:
         description: 'URL of the AUR package repository'
         required: true
+      tag_name:
+        description: 'Tag name for the release'
+        required: true
 
 jobs:
   build:
@@ -22,17 +25,27 @@ jobs:
           pacman -Syu --noconfirm
           pacman -S --noconfirm base-devel git
 
+      - name: Create non-root user
+        run: |
+          useradd -m builduser
+          echo "builduser ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+          mkdir -p /home/builduser/aur-package
+          chown -R builduser:builduser /home/builduser/aur-package
+
       - name: Clone AUR package repository
         run: |
-          git clone ${{ github.event.inputs.aur_repo_url }} aur-package
-          cd aur-package
-          makepkg -si --noconfirm
+          sudo -u builduser git clone ${{ github.event.inputs.aur_repo_url }} /home/builduser/aur-package
+
+      - name: Build the package
+        run: |
+          cd /home/builduser/aur-package
+          sudo -u builduser makepkg -si --noconfirm
 
       - name: Upload release assets
         uses: actions/upload-artifact@v2
         with:
           name: aur-package
-          path: aur-package/*.pkg.tar.zst
+          path: /home/builduser/aur-package/*.pkg.tar.zst
 
   release:
     needs: build
@@ -52,17 +65,17 @@ jobs:
         id: create_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          tag_name: ${{ github.event.inputs.tag_name }}
+          release_name: Release ${{ github.event.inputs.tag_name }}
           draft: false
           prerelease: false
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./release/*.pkg.tar.zst
