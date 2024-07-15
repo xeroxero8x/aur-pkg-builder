@@ -22,27 +22,17 @@ jobs:
           pacman -Syu --noconfirm
           pacman -S --noconfirm base-devel git
 
-      - name: Create a non-root user
-        run: |
-          useradd -m builder
-          echo 'builder ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
-          mkdir -p /home/builder/aur-package
-          chown -R builder:builder /home/builder/aur-package
-
       - name: Clone AUR package repository
         run: |
-          sudo -u builder git clone ${{ github.event.inputs.aur_repo_url }} /home/builder/aur-package
-
-      - name: Build the AUR package
-        run: |
-          cd /home/builder/aur-package
-          sudo -u builder makepkg -si --noconfirm
+          git clone ${{ github.event.inputs.aur_repo_url }} aur-package
+          cd aur-package
+          makepkg -si --noconfirm
 
       - name: Upload release assets
         uses: actions/upload-artifact@v2
         with:
           name: aur-package
-          path: /home/builder/aur-package/*.pkg.tar.zst
+          path: aur-package/*.pkg.tar.zst
 
   release:
     needs: build
@@ -62,17 +52,19 @@ jobs:
         id: create_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          tag_name: ${{ github.event.inputs.tag_name }}
+          release_name: Release ${{ github.event.inputs.tag_name }}
           draft: false
           prerelease: false
 
       - name: Upload Release Asset
-        uses: softprops/action-gh-release@v1
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
         with:
-          files: ./release/*.pkg.tar.zst
-          name: Aur build
-          body: none
-          tag_name: ${{github.run_id}}
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./release/*.pkg.tar.zst
+          asset_name: aur-package.pkg.tar.zst
+          asset_content_type: application/x-tar
