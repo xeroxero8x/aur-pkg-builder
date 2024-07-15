@@ -22,20 +22,27 @@ jobs:
           pacman -Syu --noconfirm
           pacman -S --noconfirm base-devel git
 
+      - name: Create a non-root user
+        run: |
+          useradd -m builder
+          echo 'builder ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+          mkdir -p /home/builder/aur-package
+          chown -R builder:builder /home/builder/aur-package
+
       - name: Clone AUR package repository
         run: |
-          git clone ${{ github.event.inputs.aur_repo_url }} /home/aur-package
-          
+          sudo -u builder git clone ${{ github.event.inputs.aur_repo_url }} /home/builder/aur-package
+
       - name: Build the AUR package
         run: |
-          cd /home/aur-package
-          makepkg -si --noconfirm
+          cd /home/builder/aur-package
+          sudo -u builder makepkg -si --noconfirm
 
       - name: Upload release assets
         uses: actions/upload-artifact@v2
         with:
           name: aur-package
-          path: /home/aur-package/*.pkg.tar.zst
+          path: /home/builder/aur-package/*.pkg.tar.zst
 
   release:
     needs: build
