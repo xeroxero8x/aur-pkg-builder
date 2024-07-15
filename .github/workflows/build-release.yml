@@ -70,11 +70,9 @@ jobs:
           prerelease: false
 
       - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v1
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./release/*.pkg.tar.zst
-          asset_name: aur-package.pkg.tar.zst
-          asset_content_type: application/x-tar
+          files: ./release/*.pkg.tar.zst
+          name: Aur build
+          body: none
+          tag_name: ${{github.run_id}}
