@@ -31,7 +31,7 @@ jobs:
       - name: Run Arch Linux container and build package
         run: |
           mkdir -p ${GITHUB_WORKSPACE}/aur
-          docker run --rm --name arch-linux  archlinux:latest /bin/bash -c " 
+          docker run --rm --name arch-linux  archlinux:latest /bin/bash
           pacman -Syu --noconfirm
           pacman -S git base-devel sudo --noconfirm
            echo 'builduser ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers &&
