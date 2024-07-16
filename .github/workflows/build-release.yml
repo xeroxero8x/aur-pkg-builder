@@ -32,8 +32,9 @@ jobs:
         run: |
           mkdir -p ${GITHUB_WORKSPACE}/aur
           docker run --rm --name arch-linux  archlinux:latest /bin/bash -c "
-          pacman -Syu --noconfirm
-          pacman -S git base-devel sudo --noconfirm
+          pacman -Syu --noconfirm &&
+          pacman -S git base-devel sudo --noconfirm &&
+          useradd -m builduser &&
            echo 'builduser ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers &&
             su - builduser -c '
               git clone ${{ github.event.inputs.aur_repo_url }} /home/builduser/aur-package &&
