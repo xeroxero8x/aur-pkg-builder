@@ -32,7 +32,7 @@ jobs:
         run: |
           mkdir -p ${GITHUB_WORKSPACE}/aur
           docker run --rm --name arch-linux  archlinux:latest /bin/bash -c "
-          pacman -Syu --noconfirm &&
+          sudo sed -i '/\[multilib\]/,/Include/s/^#//' /etc/pacman.conf && sudo pacman -Syu --noconfirm &&
           pacman -S git base-devel sudo --noconfirm &&
           useradd -m builduser &&
            echo 'builduser ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers &&
@@ -42,6 +42,7 @@ jobs:
               makepkg -f --noconfirm
             '
             "
+            docker start arch-linux
             docker cp arch-linux:/home/builduser/aur-package/*.pkg.tar.zst ${GITHUB_WORKSPACE}/aur/
 
       - name: Upload built packages as artifact
