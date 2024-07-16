@@ -52,8 +52,12 @@ jobs:
         with:
           name: aur-package
           path: ${GITHUB_WORKSPACE}/aur/*.pkg.tar.zst
+  
+      - name: Checkout Repository
+        uses: actions/checkuot@v4
+        
       - name: Upload to Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: aur/aur-package/*.pkg.tar.zst
           name: Aur package
@@ -65,8 +69,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+     
 
       - name: Download built package
         uses: actions/download-artifact@v2
