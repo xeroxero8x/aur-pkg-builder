@@ -54,7 +54,7 @@ jobs:
           path: ${GITHUB_WORKSPACE}/aur/*.pkg.tar.zst
   
       - name: Checkout Repository
-        uses: actions/checkuot@v4
+        uses: actions/checkout@v4
         
       - name: Upload to Release
         uses: softprops/action-gh-release@v2
