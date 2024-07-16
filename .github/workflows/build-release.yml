@@ -31,7 +31,7 @@ jobs:
       - name: Run Arch Linux container and build package
         run: |
           mkdir -p ${GITHUB_WORKSPACE}/aur
-          docker run --rm --name arch-linux  archlinux:latest /bin/bash
+          docker run --rm --name arch-linux  archlinux:latest /bin/bash -c "
           pacman -Syu --noconfirm
           pacman -S git base-devel sudo --noconfirm
            echo 'builduser ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers &&
@@ -40,7 +40,7 @@ jobs:
               cd /home/builduser/aur-package &&
               makepkg -f --noconfirm
             '
-            exit
+            "
             docker cp arch-linux:/home/builduser/aur-package/*.pkg.tar.zst ${GITHUB_WORKSPACE}/aur/
 
       - name: Upload built packages as artifact
