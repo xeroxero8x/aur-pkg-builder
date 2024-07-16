@@ -40,12 +40,6 @@ jobs:
           sudo -u builduser makepkg -si --noconfirm
           docker cp arch-linux:/home/builduser/aur-package/*.pkg.tar.zst ${GITHUB_WORKSPACE}/
 
-  release:
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
