@@ -30,7 +30,7 @@ jobs:
 
       - name: Run Arch Linux container and build package
         run: |
-          mkdir -p ${GITHUB_WORKSPACE}/aur
+          mkdir -p ${GITHUB_WORKSPACE}/aur 
           docker run --name arch-linux  archlinux:latest /bin/bash -c "
           sed -i '/\[multilib\]/,/Include/s/^#//' /etc/pacman.conf && pacman -Syu --noconfirm &&
           pacman -S git base-devel sudo imagemagick optipng --noconfirm &&
@@ -43,13 +43,13 @@ jobs:
             '
             "
             docker start arch-linux
-            docker cp arch-linux:/home/builduser/aur-package/*.pkg.tar.zst ${GITHUB_WORKSPACE}/aur/
+            docker cp arch-linux:/home/builduser/aur-package/ ${GITHUB_WORKSPACE}/aur/
 
       - name: Upload built packages as artifact
         uses: actions/upload-artifact@v2
         with:
           name: aur-package
-          path: ${GITHUB_WORKSPACE}/pkgs/*.pkg.tar.zst
+          path: ${GITHUB_WORKSPACE}/aur/*.pkg.tar.zst
       - name: Upload to Release
         uses: softprops/action-gh-release@v1
         with:
