@@ -37,13 +37,14 @@ jobs:
           useradd -m builduser &&
            echo 'builduser ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers &&
             su - builduser -c '
-              git clone ${{ github.event.inputs.aur_repo_url }} /home/builduser/aur-package &&
+              git clone ${{ github.event.inputs.aur_repo_url }} /home/builduser/aur-package/ && ls /home/builduser/aur-package/
               cd /home/builduser/aur-package &&
               makepkg -f --noconfirm
             '
             "
             docker start arch-linux
             docker cp arch-linux:/home/builduser/aur-package/ ${GITHUB_WORKSPACE}/aur/
+            ls aur/
 
       - name: Upload built packages as artifact
         uses: actions/upload-artifact@v2
