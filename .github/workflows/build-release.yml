@@ -33,7 +33,7 @@ jobs:
           mkdir -p ${GITHUB_WORKSPACE}/aur
           docker run --rm --name arch-linux  archlinux:latest /bin/bash -c "
           sed -i '/\[multilib\]/,/Include/s/^#//' /etc/pacman.conf && pacman -Syu --noconfirm &&
-          pacman -S git base-devel sudo --noconfirm &&
+          pacman -S git base-devel sudo imagemagick optipng --noconfirm &&
           useradd -m builduser &&
            echo 'builduser ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers &&
             su - builduser -c '
