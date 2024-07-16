@@ -33,7 +33,7 @@ jobs:
           mkdir -p ${GITHUB_WORKSPACE}/pkgs
           docker run --rm --name arch-linux -v ${GITHUB_WORKSPACE}/pkgs:/pkgs archlinux:latest /bin/bash -c "
             pacman -Syu --noconfirm &&
-            pacman -S --noconfirm base-devel git sudo &&
+            pacman -S --noconfirm base-devel git sudo imagemagick optipng &&
             useradd -m builduser &&
             echo 'builduser ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers &&
             su - builduser -c '
