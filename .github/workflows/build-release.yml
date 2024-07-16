@@ -43,6 +43,7 @@ jobs:
             ' &&
             cp /home/builduser/aur-package/*.pkg.tar.zst /pkgs/
           "
+          docker cp arch-linux:/home/builduser/aur-package/*.pkg.tar.zst ${GITHUB_WORKSPACE}/pkgs/
 
       - name: Upload built packages as artifact
         uses: actions/upload-artifact@v2
