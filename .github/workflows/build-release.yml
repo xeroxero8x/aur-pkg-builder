@@ -15,10 +15,15 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    if: github.event.repository.owner.id == github.event.sender.id
+    env:
+      GITHUB_TOKEN: ${{secret.GITHUB.TOKEN}}
+    permissions:
+      contents: write 
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Docker
         run: |
@@ -47,19 +52,20 @@ jobs:
             docker cp arch-linux:/home/builduser/aur-package/ ${GITHUB_WORKSPACE}/aur/
             ls aur/aur-package/
 
-      - name: Upload built packages as artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: aur-package
-          path: ${GITHUB_WORKSPACE}/aur/*.pkg.tar.zst
-  
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        
+      - name: Check if Recovery Exist
+        run: |
+          cd ${GITHUB_WORKSPACE}/aur
+          if [ -f  aur-package/*.zst ]; then
+            echo "CHECK_PKG_IS_OK=true" >> $GITHUB_ENV
+          else
+            echo "PKG directory is empty."
+          fi
+                  
       - name: Upload to Release
         uses: softprops/action-gh-release@v2
+        if: env.CHECK_PKG_IS_OK == 'true'
         with:
-          files: ${GITHUB_WORKSPACE}/aur/aur-package/*.zst
+          files: aur/aur-package/*.zst
           name: Aur package
           tag_name: ${{github.run_id}}
-          Body: Aur package          
+          body: Aur packges
