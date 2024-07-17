@@ -45,7 +45,7 @@ jobs:
             "
             docker start arch-linux
             docker cp arch-linux:/home/builduser/aur-package/ ${GITHUB_WORKSPACE}/aur/
-            ls aur/
+            ls aur/aur-package/
 
       - name: Upload built packages as artifact
         uses: actions/upload-artifact@v2
