@@ -7,17 +7,13 @@ on:
         description: 'URL of the AUR package repository'
         required: true
         default: 'https://aur.archlinux.org/floorp-bin.git'
-      release_tag:
-        description: 'Tag for the release'
-        required: true
-        default: 'test'
-
+    
 jobs:
   build:
     runs-on: ubuntu-latest
     if: github.event.repository.owner.id == github.event.sender.id
     env:
-      GITHUB_TOKEN: ${{secret.GITHUB.TOKEN}}
+      GITHUB_TOKEN: ${{secrets.GITHUB.TOKEN}}
     permissions:
       contents: write 
 
