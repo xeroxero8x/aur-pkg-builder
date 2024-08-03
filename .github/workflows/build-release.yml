@@ -31,7 +31,6 @@ jobs:
 
       - name: Run Arch Linux container and build package
         run: |
-          mkdir -p ${GITHUB_WORKSPACE}/aur 
           docker run --name arch-linux  archlinux:latest /bin/bash -c "
           pacman -Syu --noconfirm &&
           pacman -S git base-devel sudo --needed --noconfirm &&
@@ -39,7 +38,7 @@ jobs:
            echo 'builduser ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers &&
             su - builduser -c '
           git clone https://aur.archlinux.org/paru.git && cd paru && makepkg -si --noconfirm &&
-              paru -S ${{ github.event.inputs.aur_name }} 
+              paru -S --noconfirm ${{ github.event.inputs.aur_name }} 
             '
             "
             docker start arch-linux
