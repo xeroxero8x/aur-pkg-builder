@@ -39,18 +39,16 @@ jobs:
             su - builduser -c '
           git clone https://aur.archlinux.org/paru.git && cd paru && makepkg -si --noconfirm && cd 
               paru -S --noconfirm ${{ github.event.inputs.aur_name }} &&
-            ls -la
-            cd .cache && ls -la 
+            mkdir -p pkgs && cp .cache/paru/*/*.zst pkgs/  
             '
             "
             docker start arch-linux
-            docker cp arch-linux:/home/builduser/.cache/paru ~ 
+            docker cp arch-linux:/home/builduser/pkgs ~/  
            ls -la  
 
       - name: Check if Pkgs Exist
         run: |
-          cd ~ && cp ./*/*.zst ./  
-          if [ -f  ./*.zst ]; then
+          if [ -f  pkgs/*.zst ]; then
             echo "CHECK_PKG_IS_OK=true" >> $GITHUB_ENV &&
             echo "Found them"
           else
@@ -60,7 +58,7 @@ jobs:
       - name: Upload to Release
         uses: softprops/action-gh-release@v2
         with:
-          files: ./*.zst
+          files: pkgs/*.zst
           name: Aur package ${{ github.event.inputs.aur_name }}
           tag_name: ${{github.run_id}}
           body: Aur packges
