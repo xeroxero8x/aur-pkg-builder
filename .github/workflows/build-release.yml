@@ -38,7 +38,8 @@ jobs:
            echo 'builduser ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers &&
             su - builduser -c '
           git clone https://aur.archlinux.org/paru.git && cd paru && makepkg -si --noconfirm &&
-              paru -S --noconfirm ${{ github.event.inputs.aur_name }} 
+              paru -S --noconfirm ${{ github.event.inputs.aur_name }} &&
+            ls -la 
             '
             "
             docker start arch-linux
@@ -47,7 +48,7 @@ jobs:
 
       - name: Check if Pkgs Exist
         run: |
-          cd ~ && cp */*.zst ./  
+          cd ~ && cp ./*/*.zst ./  
           if [ -f  ./*.zst ]; then
             echo "CHECK_PKG_IS_OK=true" >> $GITHUB_ENV &&
             echo "Found them"
