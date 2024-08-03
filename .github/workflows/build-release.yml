@@ -40,11 +40,11 @@ jobs:
           git clone https://aur.archlinux.org/yay.git && cd yay  && makepkg -si --noconfirm && cd 
               yay -S --noconfirm ${{ github.event.inputs.aur_name }} &&
                 ls -la ~/.cache/yay/ && 
-              mkdir -p pkgs && cp ~/.cache/yay/*/*.zst pkgs/ 
+              mkdir -p pkgs && cp ~/.cache/yay/*/*.zst pkgs/ && ls -la  
             '
             "
             docker start arch-linux
-            docker cp arch-linux:/home/builduser/pkgs ~/  
+            docker cp arch-linux:/home/builduser/pkgs ${GITHUB_WORKSPACE}/  
            ls -la  
 
       - name: Check if Pkgs Exist
