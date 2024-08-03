@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       aur_name:
-        description: 'URL of the AUR package repository'
+        description: 'name of the AUR package '
         required: true
         default: 'floorp-bin '
     
@@ -38,7 +38,7 @@ jobs:
           useradd -m builduser &&
            echo 'builduser ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers &&
             su - builduser -c '
-          git clone https://aur.archlinux.org/paru.git && cd paur && makepkg -si --noconfirm &&
+          git clone https://aur.archlinux.org/paru.git && cd paru && makepkg -si --noconfirm &&
               paru -S ${{ github.event.inputs.aur_name }} 
             '
             "
