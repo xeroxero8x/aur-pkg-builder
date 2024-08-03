@@ -43,11 +43,11 @@ jobs:
             "
             docker start arch-linux
             docker cp arch-linux:/home/builduser/.cache/paru ~ 
-            
+           ls -la  
 
       - name: Check if Pkgs Exist
         run: |
-          cd ~ && cp paur/*/*.zst ./  
+          cd ~ && cp */*.zst ./  
           if [ -f  ./*.zst ]; then
             echo "CHECK_PKG_IS_OK=true" >> $GITHUB_ENV &&
             echo "Found them"
