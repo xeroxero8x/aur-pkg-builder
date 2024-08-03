@@ -39,7 +39,8 @@ jobs:
             su - builduser -c '
           git clone https://aur.archlinux.org/paru.git && cd paru && makepkg -si --noconfirm && cd 
               paru -S --noconfirm ${{ github.event.inputs.aur_name }} &&
-            mkdir -p pkgs && cp .cache/paru/*/*.zst pkgs/  
+            mkdir -p pkgs && cp .cache/paru/*/*.zst pkgs/ 
+          ls -la ~/.cache/paru/
             '
             "
             docker start arch-linux
@@ -56,9 +57,10 @@ jobs:
           fi
                   
       - name: Upload to Release
+        if: env.CHECK_PKG_IS_OK == 'true'
         uses: softprops/action-gh-release@v2
         with:
           files: pkgs/*.zst
           name: Aur package ${{ github.event.inputs.aur_name }}
           tag_name: ${{github.run_id}}
-          body: Aur packges
+          body: Aur packges ${{ github.event.inputs.aur_name }}
