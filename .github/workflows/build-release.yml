@@ -3,10 +3,10 @@ name: Build and Release AUR Package
 on:
   workflow_dispatch:
     inputs:
-      aur_repo_url:
+      aur_name:
         description: 'URL of the AUR package repository'
         required: true
-        default: 'https://aur.archlinux.org/floorp-bin.git'
+        default: 'floorp-bin '
     
 jobs:
   build:
@@ -33,25 +33,23 @@ jobs:
         run: |
           mkdir -p ${GITHUB_WORKSPACE}/aur 
           docker run --name arch-linux  archlinux:latest /bin/bash -c "
-          sed -i '/\[multilib\]/,/Include/s/^#//' /etc/pacman.conf && pacman -Syu --noconfirm &&
-          pacman -S git base-devel sudo imagemagick optipng --noconfirm &&
+          pacman -Syu --noconfirm &&
+          pacman -S git base-devel sudo --needed --noconfirm &&
           useradd -m builduser &&
            echo 'builduser ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers &&
             su - builduser -c '
-              git clone ${{ github.event.inputs.aur_repo_url }} /home/builduser/aur-package/ &&
-              ls /home/builduser/aur-package/ &&
-              cd /home/builduser/aur-package &&
-              makepkg -f --noconfirm
+          git clone https://aur.archlinux.org/paru.git && cd paur && makepkg -si --noconfirm &&
+              paru -S ${{ github.event.inputs.aur_name }} 
             '
             "
             docker start arch-linux
-            docker cp arch-linux:/home/builduser/aur-package/ ${GITHUB_WORKSPACE}/aur/
-            ls aur/aur-package/
+            docker cp arch-linux:/home/builduser/.cache/paru ${GITHUB_WORKSPACE}/ 
+            
 
-      - name: Check if Recovery Exist
+      - name: Check if Pkgs Exist
         run: |
           cd ${GITHUB_WORKSPACE}/aur
-          if [ -f  aur-package/*.zst ]; then
+          if [ -f  paru/*/*.zst ]; then
             echo "CHECK_PKG_IS_OK=true" >> $GITHUB_ENV
           else
             echo "PKG directory is empty."
@@ -61,7 +59,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         if: env.CHECK_PKG_IS_OK == 'true'
         with:
-          files: aur/aur-package/*.zst
-          name: Aur package
+          files: paru/*/*.zst
+          name: Aur package ${{ github.event.inputs.aur_name }}
           tag_name: ${{github.run_id}}
           body: Aur packges
