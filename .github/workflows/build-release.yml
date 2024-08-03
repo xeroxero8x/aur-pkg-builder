@@ -39,8 +39,8 @@ jobs:
             su - builduser -c '
           git clone https://aur.archlinux.org/paru.git && cd paru && makepkg -si --noconfirm && cd 
               paru -S --noconfirm ${{ github.event.inputs.aur_name }} &&
-            mkdir -p pkgs && cp .cache/paru/*/*.zst pkgs/ 
-          ls -la ~/.cache/paru/
+                ls -la ~/.cache/paru/ && 
+              mkdir -p pkgs && cp .cache/paru/*/*.zst pkgs/ 
             '
             "
             docker start arch-linux
