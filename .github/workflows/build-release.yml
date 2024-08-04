@@ -38,6 +38,7 @@ jobs:
            echo 'builduser ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers &&
             su - builduser -c '
           git clone https://aur.archlinux.org/yay.git && cd yay  && makepkg -si --noconfirm && cd 
+          yay -Scc --noconfirm 
               yay -S --noconfirm ${{ github.event.inputs.aur_name }} &&
                 ls -la ~/.cache/yay/ && 
               mkdir -p pkgs && cp ~/.cache/yay/*/*.zst pkgs/ && ls -la  
