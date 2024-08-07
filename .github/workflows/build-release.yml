@@ -36,16 +36,15 @@ jobs:
           pacman -S git base-devel sudo curl wget openh264 --needed --noconfirm &&
           useradd -m builduser &&
            echo 'builduser ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers &&
-            sudo -u builduser -c '
+            su - builduser -c '
                 set -e
                 git clone https://aur.archlinux.org/${{ github.event.inputs.aur_name }}
                 cd ${{github.event.inputs.aur_name}}
-          makepkg -s --noconfirm --needed 
+                makepkg -s --noconfirm --needed 
             '
             "
             docker start arch-linux
             docker cp arch-linux:/home/builduser/${{github.event.inputs.aur_name}} ${GITHUB_WORKSPACE}/  
-           ls -la
 
       - name: Check if Pkgs Exist
         run: |
