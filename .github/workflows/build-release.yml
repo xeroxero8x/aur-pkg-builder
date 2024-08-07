@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       aur_name:
-        description: 'name of the AUR package '
+        description: 'Exact name of the AUR package nothing extra'
         required: true
-        default: 'floorp-bin '
+        default: 'ayugram-desktop'
     
 jobs:
   build:
@@ -33,24 +33,23 @@ jobs:
         run: |
           docker run --name arch-linux  archlinux:latest /bin/bash -c "
           pacman -Syu --noconfirm &&
-          pacman -S git base-devel sudo --needed --noconfirm &&
+          pacman -S git base-devel sudo curl wget openh264 --needed --noconfirm &&
           useradd -m builduser &&
            echo 'builduser ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers &&
-            su - builduser -c '
-          git clone https://aur.archlinux.org/yay.git && cd yay  && makepkg -si --noconfirm && cd 
-          yay -Scc --noconfirm 
-              yay -S --noconfirm ${{ github.event.inputs.aur_name }} &&
-                ls -la ~/.cache/yay/ && 
-              mkdir -p pkgs && cp ~/.cache/yay/*/*.zst pkgs/ && ls -la  
+            sudo -u builduser -c '
+                set -e
+                git clone https://aur.archlinux.org/${{ github.event.inputs.aur_name }}
+                cd ${{github.event.inputs.aur_name}}
+          makepkg -s --noconfirm --needed || { echo "Failed to build ${{github.event.inputs.aur_name}}; exit 1;}  
             '
             "
             docker start arch-linux
-            docker cp arch-linux:/home/builduser/pkgs ${GITHUB_WORKSPACE}/  
-           ls -la  
+            docker cp arch-linux:/home/builduser/${{github.event.inputs.aur_name}} ${GITHUB_WORKSPACE}/  
+           ls -la
 
       - name: Check if Pkgs Exist
         run: |
-          if [ -f  pkgs/*.zst ]; then
+          if [ -f  ${{github.event.inputs.aur_name}}/*.zst ]; then
             echo "CHECK_PKG_IS_OK=true" >> $GITHUB_ENV &&
             echo "Found them"
           else
@@ -61,7 +60,7 @@ jobs:
         if: env.CHECK_PKG_IS_OK == 'true'
         uses: softprops/action-gh-release@v2
         with:
-          files: pkgs/*.zst
+          files: ${{github.event.inputs.aur_name}}/*.zst
           name: Aur package ${{ github.event.inputs.aur_name }}
           tag_name: ${{github.run_id}}
           body: Aur packges ${{ github.event.inputs.aur_name }}
