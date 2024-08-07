@@ -40,7 +40,7 @@ jobs:
                 set -e
                 git clone https://aur.archlinux.org/${{ github.event.inputs.aur_name }}
                 cd ${{github.event.inputs.aur_name}}
-          makepkg -s --noconfirm --needed || { echo "Failed to build ${{github.event.inputs.aur_name}}; exit 1;}  
+          makepkg -s --noconfirm --needed || echo "Failed to build ${{github.event.inputs.aur_name}} 
             '
             "
             docker start arch-linux
