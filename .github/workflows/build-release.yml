@@ -34,10 +34,11 @@ jobs:
           sudo -u builduser git clone https://aur.archlinux.org/${{ github.event.inputs.aur_name }} &&
           cd ${{github.event.inputs.aur_name}}
           sudo -u builduser makepkg -s --noconfirm --needed             
-          ls -la 
+
       - name: Check if Pkgs Exist
         run: |
           cd /home/builduser 
+          ls -la 
           if [ -f  ${{github.event.inputs.aur_name}}/*.zst ]; then
             echo "CHECK_PKG_IS_OK=true" >> $GITHUB_ENV &&
             echo "Found them"
