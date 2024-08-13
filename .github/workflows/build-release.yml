@@ -30,6 +30,7 @@ jobs:
           pacman -S git base-devel sudo curl wget openh264 --needed --noconfirm &&
           useradd -m builduser &&
           echo 'builduser ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers &&
+          cd /home/builduser
           sudo -u builduser git clone https://aur.archlinux.org/${{ github.event.inputs.aur_name }} &&
           cd ${{github.event.inputs.aur_name}}
           sudo -u builduser makepkg -s --noconfirm --needed             
