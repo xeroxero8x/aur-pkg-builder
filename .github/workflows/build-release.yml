@@ -11,6 +11,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container: 
+      image: archlinux:latest 
     if: github.event.repository.owner.id == github.event.sender.id
     env:
       GITHUB_TOKEN: ${{secrets.GITHUB.TOKEN}}
@@ -21,17 +23,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Docker
-        run: |
-          sudo apt-get update
-          sudo apt-get remove -y containerd.io containerd
-          sudo apt-get install -y docker.io
-          sudo systemctl start docker
-          sudo usermod -aG docker $USER
-
       - name: Run Arch Linux container and build package
         run: |
-          docker run --name arch-linux  archlinux:latest /bin/bash -c "
           pacman -Syu --noconfirm &&
           pacman -S git base-devel sudo curl wget openh264 --needed --noconfirm &&
           useradd -m builduser &&
@@ -41,13 +34,11 @@ jobs:
                 git clone https://aur.archlinux.org/${{ github.event.inputs.aur_name }}
                 cd ${{github.event.inputs.aur_name}}
                 makepkg -s --noconfirm --needed 
-            '
-            "
-            docker start arch-linux
-            docker cp arch-linux:/home/builduser/${{github.event.inputs.aur_name}} ${GITHUB_WORKSPACE}/  
+            '            
 
       - name: Check if Pkgs Exist
         run: |
+          ls -la 
           if [ -f  ${{github.event.inputs.aur_name}}/*.zst ]; then
             echo "CHECK_PKG_IS_OK=true" >> $GITHUB_ENV &&
             echo "Found them"
@@ -56,7 +47,7 @@ jobs:
           fi
                   
       - name: Upload to Release
-        if: env.CHECK_PKG_IS_OK == 'true'
+        # if: env.CHECK_PKG_IS_OK == 'true'
         uses: softprops/action-gh-release@v2
         with:
           files: ${{github.event.inputs.aur_name}}/*.zst
