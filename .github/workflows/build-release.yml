@@ -49,7 +49,7 @@ jobs:
         if: env.CHECK_PKG_IS_OK == 'true'
         uses: softprops/action-gh-release@v2
         with:
-          files: ${{github.event.inputs.aur_name}}/*.zst
+          files: /home/builduser/${{github.event.inputs.aur_name}}/*.zst
           name: Aur package ${{ github.event.inputs.aur_name }}
           tag_name: ${{github.run_id}}
           body: Aur packges ${{ github.event.inputs.aur_name }}
