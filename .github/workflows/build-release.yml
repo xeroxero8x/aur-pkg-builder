@@ -25,16 +25,14 @@ jobs:
 
       - name: Run Arch Linux container and build package
         run: |
+          set -e 
           pacman -Syu --noconfirm &&
           pacman -S git base-devel sudo curl wget openh264 --needed --noconfirm &&
           useradd -m builduser &&
-           echo 'builduser ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers &&
-            su - builduser -c '
-                set -e
-                git clone https://aur.archlinux.org/${{ github.event.inputs.aur_name }}
-                cd ${{github.event.inputs.aur_name}}
-                makepkg -s --noconfirm --needed 
-            '            
+          echo 'builduser ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers &&
+          sudo -u builduser git clone https://aur.archlinux.org/${{ github.event.inputs.aur_name }} &&
+          cd ${{github.event.inputs.aur_name}}
+          sudo -u builduser makepkg -s --noconfirm --needed             
 
       - name: Check if Pkgs Exist
         run: |
