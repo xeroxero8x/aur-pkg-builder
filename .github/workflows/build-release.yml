@@ -37,9 +37,8 @@ jobs:
 
       - name: Check if Pkgs Exist
         run: |
-          cd /home/builduser 
-          ls -la 
-          if [ -f  ${{github.event.inputs.aur_name}}/*.zst ]; then
+          cd /home/builduser  
+          if ls  "${{github.event.inputs.aur_name}}"/*.zst 1> /dev/null 2>&1; then
             echo "CHECK_PKG_IS_OK=true" >> $GITHUB_ENV &&
             echo "Found them"
           else
