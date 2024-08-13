@@ -34,10 +34,10 @@ jobs:
           sudo -u builduser git clone https://aur.archlinux.org/${{ github.event.inputs.aur_name }} &&
           cd ${{github.event.inputs.aur_name}}
           sudo -u builduser makepkg -s --noconfirm --needed             
-
+          ls -la 
       - name: Check if Pkgs Exist
         run: |
-          ls -la 
+          cd /home/builduser 
           if [ -f  ${{github.event.inputs.aur_name}}/*.zst ]; then
             echo "CHECK_PKG_IS_OK=true" >> $GITHUB_ENV &&
             echo "Found them"
@@ -46,7 +46,7 @@ jobs:
           fi
                   
       - name: Upload to Release
-        # if: env.CHECK_PKG_IS_OK == 'true'
+        if: env.CHECK_PKG_IS_OK == 'true'
         uses: softprops/action-gh-release@v2
         with:
           files: ${{github.event.inputs.aur_name}}/*.zst
