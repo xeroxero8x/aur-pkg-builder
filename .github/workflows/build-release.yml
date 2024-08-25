@@ -31,10 +31,10 @@ jobs:
           useradd -m builduser &&
           echo 'builduser ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers &&
           su - builduser
-          sudo chown -R builduser:builduser /home/builduser
           cd /home/builduser
           git clone https://aur.archlinux.org/yay.git
           cd yay
+          sudo chown -R builduser:builduser /home/builduser
           sudo -u builduser makepkg -si --noconfirm 
           sudo -u builduser yay -S --noconfirm  ${{github.event.inputs.aur_name}} 
           cd /home/builduser
