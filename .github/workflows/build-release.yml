@@ -38,7 +38,7 @@ jobs:
           sudo -u builduser makepkg -si --noconfirm 
           sudo -u builduser yay -S --noconfirm  ${{github.event.inputs.aur_name}} 
           cd /home/builduser
-          mv .cache/*/${{ github.event.inputs.aur_name }}*.zst ./ 
+          mv .cache/yay/*/${{ github.event.inputs.aur_name }}*.zst ./ 
       - name: Check if Pkgs Exist
         run: |
           cd /home/builduser  
