@@ -33,7 +33,7 @@ jobs:
           su - builduser
           sudo chown -R builduser:builduser /home/builduser
           cd /home/builduser
-          sudo -u builduser git clone https://aur.archlinux.org/yay.git
+          git clone https://aur.archlinux.org/yay.git
           cd yay
           sudo -u builduser makepkg -si --noconfirm 
           sudo -u builduser yay -S --noconfirm  ${{github.event.inputs.aur_name}} 
