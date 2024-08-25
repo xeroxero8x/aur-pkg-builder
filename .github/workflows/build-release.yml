@@ -6,7 +6,7 @@ on:
       aur_name:
         description: 'Exact name of the AUR package nothing extra'
         required: true
-        default: 'ayugram-desktop'
+        default: 'r-quick-share'
     
 jobs:
   build:
@@ -35,7 +35,7 @@ jobs:
           sudo -u builduser git clone https://aur.archlinux.org/yay.git
           cd yay
           sudo -u builduser makepkg -si --noconfirm 
-          yay -S --noconfirm  ${{github.event.inputs.aur_name}} 
+          sudo -u builduser yay -S --noconfirm  ${{github.event.inputs.aur_name}} 
           cd /home/builduser
           mv .cache/*/${{ github.event.inputs.aur_name }}*.zst ./ 
       - name: Check if Pkgs Exist
