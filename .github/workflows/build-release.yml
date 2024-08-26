@@ -1,9 +1,6 @@
 name: Build and Release AUR Package
 
-on:
-  push:
-    branches:
-      - main 
+on: 
   workflow_dispatch:
     inputs:
       aur_name:
