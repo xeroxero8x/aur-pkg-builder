@@ -13,7 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     container: 
       image: archlinux:latest 
-    if: github.event.repository.owner.id == github.event.sender.id
     env:
       GITHUB_TOKEN: ${{secrets.GITHUB.TOKEN}}
     permissions:
@@ -25,6 +24,7 @@ jobs:
 
       - name: Run Arch Linux container and build package
         run: |
+          lsblk -lf
           set -e 
           pacman -Syu --noconfirm &&
           pacman -S git base-devel sudo curl wget openh264 --needed --noconfirm &&
