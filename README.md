@@ -1,5 +1,8 @@
+<div align="center">
+<div> <img src="./public/logo.png" width="300"> </div>
 <h1 align="center"> Aur Package Builder </h1>
 <p align="center"> This Repo Build Arch User Repository Packages and releases them to <b>GitHub </b> release  </p>
+</div>
 
 ![.github/workflows/build-release.yml](https://github.com/xeroxero8x/aur-pkg-builder/actions/workflows/build-release.yml/badge.svg)
 
