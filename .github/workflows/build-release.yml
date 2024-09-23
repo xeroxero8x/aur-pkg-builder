@@ -15,8 +15,6 @@ jobs:
       image: archlinux:latest 
     env:
       GITHUB_TOKEN: ${{secrets.GITHUB.TOKEN}}
-    permissions:
-      contents: write 
 
     steps:
       - name: Checkout repository
