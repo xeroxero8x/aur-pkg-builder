@@ -44,6 +44,11 @@
             font-size: 1em;
             color: #333;
         }
+        #errorDetails {
+            margin-top: 10px;
+            color: red;
+            font-size: 0.9em;
+        }
     </style>
 </head>
 <body>
@@ -53,34 +58,46 @@
         <br>
         <button onclick="triggerBuild()">Build Package</button>
         <p id="status"></p>
+        <p id="errorDetails"></p>
     </div>
 
     <script>
         const triggerBuild = async () => {
             const pkgName = document.getElementById('pkgName').value;
+            const statusElement = document.getElementById('status');
+            const errorDetailsElement = document.getElementById('errorDetails');
+
             if (!pkgName) {
-                document.getElementById('status').textContent = 'Please enter a package name.';
+                statusElement.textContent = 'Please enter a package name.';
                 return;
             }
 
-            document.getElementById('status').textContent = 'Starting build process...';
+            statusElement.textContent = 'Starting build process...';
+            errorDetailsElement.textContent = ''; // Clear previous errors
 
-            const response = await fetch(`https://api.github.com/repos/xeroxero8x/aur-pkg-builder/actions/workflows/build-release.yml/dispatches`, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/vnd.github.v3+json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    ref: 'main',
-                    inputs: { package_name: pkgName }
-                })
-            });
+            try {
+                const response = await fetch(`https://api.github.com/repos/xeroxero8x/aur-pkg-builder/actions/workflows/build-release.yml/dispatches`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        ref: 'main',
+                        inputs: { aur_name: pkgName }
+                    })
+                });
 
-            if (response.ok) {
-                document.getElementById('status').textContent = 'Build triggered successfully!';
-            } else {
-                document.getElementById('status').textContent = 'Failed to trigger build.';
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`GitHub API Error: ${response.status} - ${response.statusText}. Message: ${errorData.message}`);
+                }
+
+                statusElement.textContent = 'Build triggered successfully!';
+            } catch (error) {
+                statusElement.textContent = 'Failed to trigger build.';
+                errorDetailsElement.textContent = `Error details: ${error.message}`;
+                console.error('Error details:', error);
             }
         };
     </script>
